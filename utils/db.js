@@ -18,22 +18,29 @@ class DBClient {
   }
 
   async connect() {
-    // try{
-    await this.client.connect();
-    this.db = this.client.db();
-    // } catch(error){
-    //     console.log(error);
-    // }
+    try {
+      await this.client.connect();
+      this.db = this.client.db();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   isAlive() {
-    return this.client && this.client.isConnected();
+    return !!this.client;
   }
 
   async nbUsers() {
-    const count = await this.db.collection('users').countDocuments();
-    return count;
-  }
+	  try {
+	  if (!this.alive()) {
+		  await this.connect();
+		   }
+      const count = await this.db.collection('users').countDocuments();
+      return count;
+	   } catch (err) {
+		   throw err;
+		    }
+	  }
 
   async nFiles() {
     const count = await this.db.collection('files').countDocuments();
