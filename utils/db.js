@@ -31,18 +31,17 @@ class DBClient {
   }
 
   async nbUsers() {
-	  try {
-	  if (!this.alive()) {
-		  await this.connect();
-		   }
-      const count = await this.db.collection('users').countDocuments();
-      return count;
-	   } catch (err) {
-		   throw err;
-		    }
-	  }
+    if (!this.alive()) {
+      await this.connect();
+    }
+    const count = await this.db.collection('users').countDocuments();
+    return count;
+  }
 
   async nFiles() {
+    if (!this.alive()) {
+      await this.connect();
+    }
     const count = await this.db.collection('files').countDocuments();
     return count;
   }
