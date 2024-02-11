@@ -1,5 +1,6 @@
 const sha1 = require('sha1');
 const db = require('../utils/db');
+const redis = require('../utils/redis');
 
 const UsersController = {
   postNew: async (req, res) => {
@@ -22,6 +23,18 @@ const UsersController = {
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
+  },
+  getMe: async (req, res) => {
+    const token = req.headers['X-Token'];
+    const userId = await redis.get(`auth_${token}`);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const user = await db.findUserById(userId);
+    if (!user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    return res.status(200).json({ email: user.email, id: user.id });
   },
 };
 
