@@ -13,7 +13,6 @@ class RedisClient {
     this.client.on('connect', () => {
       this.isConnected = true;
     });
-
   }
 
   isAlive() {
