@@ -10,15 +10,15 @@ const UsersController = {
     if (!password) {
       return res.status(400).json({ error: 'Missing password' });
     }
-    const existinUser = await db.findUserByEmail(email);
-    if (existinUser) {
+    const existingUser = await db.findUserByEmail(email);
+    if (existingUser) {
       return res.status(400).json({ error: 'Email already exists' });
     }
     const hashedPasswd = sha1(password);
 
     try {
       const newUser = await db.createUser(email, hashedPasswd);
-      return res.status(201).json({ id: newUser.id, email: newUser.email });
+      return res.status(201).json(newUser);
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }

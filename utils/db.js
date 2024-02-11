@@ -37,12 +37,16 @@ class DBClient {
   }
 
   async createUser(email, password) {
-    return this.db.collection('users').insertOne(
+    const res = await this.db.collection('users').insertOne(
       {
         email,
         password,
       },
     );
+    return {
+      email: res.ops[0].email,
+      id: res.ops[0]._id,
+    };
   }
 }
 const dbClient = new DBClient();
