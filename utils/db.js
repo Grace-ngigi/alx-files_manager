@@ -9,6 +9,7 @@ const database = env.DB_DATABASE || 'files_manager';
 class DBClient {
   constructor() {
     const url = `mongodb://${host}:${port}/${database}`;
+    console.log(url);
     this.client = new MongoClient(url);
     this.isConnected = false;
     this.db = null;
@@ -28,7 +29,7 @@ class DBClient {
     return this.db.collection('users').countDocuments();
   }
 
-  async nFiles() {
+  async nbFiles() {
     return this.db.collection('files').countDocuments();
   }
 

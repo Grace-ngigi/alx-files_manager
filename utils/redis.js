@@ -5,13 +5,19 @@ class RedisClient {
     // constructor tat creates a client to Redis
     this.client = redis.createClient();
     // display errors in console
+    this.isConnected = false;
+
     this.client.on('error', (err) => {
       console.error('Redis Error', err);
     });
+    this.client.on('connect', () => {
+      this.isConnected = true;
+    });
+
   }
 
   isAlive() {
-    return this.client.connected;
+    return this.isConnected;
   }
 
   async get(key) {
