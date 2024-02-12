@@ -40,6 +40,10 @@ class DBClient {
     return this.db.collection('users').findOne({ _id: ObjectId(id) });
   }
 
+  findFileById(id) {
+    return this.db.collection('files').findOne({ _id: ObjectId(id) });
+  }
+
   async createUser(email, password) {
     const res = await this.db.collection('users').insertOne(
       {
@@ -51,6 +55,11 @@ class DBClient {
       email: res.ops[0].email,
       id: res.ops[0]._id,
     };
+  }
+
+  async createFile(file) {
+    const res = await this.db.collection('users').insertOne(file);
+    return res.ops[0];
   }
 }
 const dbClient = new DBClient();

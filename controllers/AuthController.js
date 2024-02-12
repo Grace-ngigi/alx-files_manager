@@ -20,11 +20,11 @@ const AuthController = {
     }
 
     const randToken = uuidv4();
-    redis.set(`auth_${randToken}`, user.id, 24 * 60 * 60);
+    await redis.set(`auth_${randToken}`, user._id.toString(), 24 * 60 * 60);
     return res.status(200).json({ token: randToken });
   },
   disconnect: async (req, res) => {
-    const token = req.headers['X-Token'];
+    const token = req.headers['x-token'];
     const userId = await redis.get(`auth_${token}`);
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
