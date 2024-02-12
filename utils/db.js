@@ -52,8 +52,8 @@ class DBClient {
     const {
       parentId, userId, limit, skip,
     } = fileReq;
-    const files = this.db.find({ parentId, userId }.skip(skip).limit(limit).toArray);
-    console.log(`te so called files: ${files}`);
+    const files = this.db.collection('files').find({ parentId, userId }).skip(skip).limit(limit)
+      .toArray();
     return files;
   }
 

@@ -82,9 +82,10 @@ const FilesController = {
     }
     const { parentId = '0', page = '0' } = req.query;
     const limit = 20;
-    const skip = parseInt(page) * limit;
+    const skip = parseInt(page, 10) * limit;
     // const fileReq = { parentId, limit, skip };
     const files = await db.findFiles({ parentId, limit, skip });
+    console.log(`te so called files: ${files}`);
     return res.status(200).json(files);
   },
 };

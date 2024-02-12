@@ -1,7 +1,7 @@
 const redis = require('./redis');
 const db = require('./db');
 
-export async function retrieveUser(req) {
+export default async function retrieveUser(req) {
   const token = req.headers['x-token'];
   if (!token) return null;
   const userId = await redis.get(`auth_${token}`);
@@ -10,3 +10,5 @@ export async function retrieveUser(req) {
   if (!user) return null;
   return { email: user.email, id: user._id };
 }
+
+module.exports = retrieveUser;
