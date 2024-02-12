@@ -1,25 +1,16 @@
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
-const redis = require('../utils/redis');
 const db = require('../utils/db');
+const retrieveUser = require('../utils/retrieveUser');
 
 const FOLDER_PATH = process.env.FOLDER_PATH || '/tmp/files_manager';
 
 const FilesController = {
   postUpload: async (req, res) => {
-    const token = req.headers['x-token'];
-    const userId = await redis.get(`auth_${token}`);
-    if (!userId) {
-      return res.status(401).json({
-        error: 'Unauthorized',
-      });
-    }
-    const user = db.findUserById(userId);
-    if (!user) {
-      return res.status(401).json({
-        error: 'Unauthorized',
-      });
+    const user = retrieveUser(req);
+    if (user === null) {
+      return res.status(401).json({ error: 'Unauthorized' });
     }
     const {
       name, type, parentId, isPublic, data,
@@ -45,7 +36,7 @@ const FilesController = {
       }
     }
     const file = {
-      userId: user._id,
+      userId: user.id,
       name,
       type,
       isPublic: isPublic || false,
@@ -70,6 +61,31 @@ const FilesController = {
     }
     const newFile = await db.createFile(file);
     return res.status(201).json(newFile);
+  },
+  getShow: async (req, res) => {
+    const user = retrieveUser(req);
+    if (user === null) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const { id } = req.params;
+    const file = await db.findFileByIdAndUserId(id, user.id);
+    // console.log(file)
+    if (!file) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+    return res.status(200).json(file);
+  },
+  getIndex: async (req, res) => {
+    const user = retrieveUser(req);
+    if (!user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const { parentId = '0', page = '0' } = req.query;
+    const limit = 20;
+    const skip = parseInt(page) * limit;
+    // const fileReq = { parentId, limit, skip };
+    const files = await db.findFiles({ parentId, limit, skip });
+    return res.status(200).json(files);
   },
 };
 

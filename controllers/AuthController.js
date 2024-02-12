@@ -4,7 +4,7 @@ const db = require('../utils/db');
 const redis = require('../utils/redis');
 
 const AuthController = {
-  connect: async (req, res) => {
+  getConnect: async (req, res) => {
     const auth = req.headers.authorization;
     if (!auth || !auth.startsWith('Basic ')) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -23,7 +23,7 @@ const AuthController = {
     await redis.set(`auth_${randToken}`, user._id.toString(), 24 * 60 * 60);
     return res.status(200).json({ token: randToken });
   },
-  disconnect: async (req, res) => {
+  getDisconnect: async (req, res) => {
     const token = req.headers['x-token'];
     const userId = await redis.get(`auth_${token}`);
     if (!userId) {

@@ -44,6 +44,19 @@ class DBClient {
     return this.db.collection('files').findOne({ _id: ObjectId(id) });
   }
 
+  findFileByIdAndUserId(id, userId) {
+    return this.db.collection('files').find({ _id: ObjectId(id), userId });
+  }
+
+  findFiles(fileReq) {
+    const {
+      parentId, userId, limit, skip,
+    } = fileReq;
+    const files = this.db.find({ parentId, userId }.skip(skip).limit(limit).toArray);
+    console.log(`te so called files: ${files}`);
+    return files;
+  }
+
   async createUser(email, password) {
     const res = await this.db.collection('users').insertOne(
       {
@@ -58,7 +71,7 @@ class DBClient {
   }
 
   async createFile(file) {
-    const res = await this.db.collection('users').insertOne(file);
+    const res = await this.db.collection('files').insertOne(file);
     return res.ops[0];
   }
 }
