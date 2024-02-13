@@ -27,7 +27,6 @@ const FilesController = {
     }
     if (parentId) {
       const parentFile = await db.findFileById(parentId);
-      //   console.log(parentFile);
       if (!parentFile) {
         return res.status(400).json({ error: 'Parent not found' });
       }
@@ -44,6 +43,7 @@ const FilesController = {
     };
 
     if (type !== 'folder') {
+      // revisit for creaatin and writin files 
       const filename = uuidv4();
       if (!fs.existsSync(FOLDER_PATH)) {
         fs.mkdirSync(FOLDER_PATH, { recursive: true });
@@ -69,7 +69,6 @@ const FilesController = {
     }
     const { id } = req.params;
     const file = await db.findFileByIdAndUserId(id, user.id);
-    // console.log(file)
     if (!file) {
       return res.status(404).json({ error: 'Not found' });
     }
@@ -80,10 +79,10 @@ const FilesController = {
     if (!user) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
+    // revisit for stron paination knowlede
     const { parentId = '0', page = '0' } = req.query;
     const limit = 20;
     const skip = parseInt(page, 10) * limit;
-    // const fileReq = { parentId, limit, skip };
     const files = await db.findFiles({ parentId, limit, skip });
     console.log(`te so called files: ${files}`);
     return res.status(200).json(files);
@@ -119,10 +118,9 @@ const FilesController = {
   },
   getFile: async(req, res) => {
     try {
-      const fileId = req.params.id;
-      const file = await db.findFileById(fileId);
+      const {id} = req.params;
+      const file = await db.findFileById(id);
       const user = retrieveUser(req);
-      // If no file document is linked to the ID passed as parameter, return 404
       if (!file) {
         return res.status(404).json({ error: 'Not found' });
       }
@@ -130,20 +128,15 @@ const FilesController = {
         return res.status(404).json({ error: 'Not found' });
       }
 
-      // If the type of the file document is a folder, return 400
       if (file.type === 'folder') {
         return res.status(400).json({ error: "A folder doesn't have content" });
       }
 
-      // If the file is not locally present, return 404
       if (!fs.existsSync(file.localPath)) {
         return res.status(404).json({ error: 'Not found' });
       }
-
-      // Get MIME-type based on the name of the file
+      // revisit to understand
       const mimeType = mime.lookup(file.name);
-
-      // Return the content of the file with the correct MIME-type
       res.setHeader('Content-Type', mimeType);
       fs.createReadStream(file.localPath).pipe(res);
     } catch (err) {
