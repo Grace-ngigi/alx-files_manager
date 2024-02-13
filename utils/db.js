@@ -74,6 +74,10 @@ class DBClient {
     const res = await this.db.collection('files').insertOne(file);
     return res.ops[0];
   }
+
+  async updateFile(id, ispublic){
+    return this.db.collection('files').updateOne({_id: ObjectId(id) }, { $set: { isPublic: ispublic}});
+  }
 }
 const dbClient = new DBClient();
 module.exports = dbClient;

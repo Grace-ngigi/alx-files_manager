@@ -88,6 +88,69 @@ const FilesController = {
     console.log(`te so called files: ${files}`);
     return res.status(200).json(files);
   },
+  putPublish: async(req, res) => {
+    const user = retrieveUser(req);
+    if (!user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const {id} = req.params;
+        const file = await db.findFileByIdAndUserId(id, user.id);
+    if (!file) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+    const publish = await db.updateFile(id, true);
+    console.log(publish);
+    return res.status(200).json(publish);
+
+  },
+  putUnpublish: async(req, res) => {
+    const user = retrieveUser(req);
+    if (!user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const {id} = req.params;
+    const file = await db.findFileByIdAndUserId(id, user.id);
+    if (!file) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+    const publish = await db.updateFile(id, false);
+    console.log(publish);
+    return res.status(200).json(publish);
+  },
+  getFile: async(req, res) => {
+    try {
+      const fileId = req.params.id;
+      const file = await db.findFileById(fileId);
+      const user = retrieveUser(req);
+      // If no file document is linked to the ID passed as parameter, return 404
+      if (!file) {
+        return res.status(404).json({ error: 'Not found' });
+      }
+      if (!file.isPublic && (user.id !== file.userId)) {
+        return res.status(404).json({ error: 'Not found' });
+      }
+
+      // If the type of the file document is a folder, return 400
+      if (file.type === 'folder') {
+        return res.status(400).json({ error: "A folder doesn't have content" });
+      }
+
+      // If the file is not locally present, return 404
+      if (!fs.existsSync(file.localPath)) {
+        return res.status(404).json({ error: 'Not found' });
+      }
+
+      // Get MIME-type based on the name of the file
+      const mimeType = mime.lookup(file.name);
+
+      // Return the content of the file with the correct MIME-type
+      res.setHeader('Content-Type', mimeType);
+      fs.createReadStream(file.localPath).pipe(res);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
 };
 
 module.exports = FilesController;
