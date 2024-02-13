@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
+const mime = require('mime');
 const db = require('../utils/db');
 const retrieveUser = require('../utils/retrieveUser');
 
@@ -63,15 +64,16 @@ const FilesController = {
     const newFile = await db.createFile(file);
 
     return res.status(201).json({
-      "id": newFile._id, 
-      "userId": newFile.userId,
-      "name": newFile.name,
-    "type": newFile.type,
-  "isPublic": newFile.isPublic,
-"parentId": newFile.parentId });
+      id: newFile._id,
+      userId: newFile.userId,
+      name: newFile.name,
+      type: newFile.type,
+      isPublic: newFile.isPublic,
+      parentId: newFile.parentId,
+    });
   },
   getShow: async (req, res) => {
-    const user = retrieveUser(req);
+    const user = await retrieveUser(req);
     if (user === null) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -83,7 +85,7 @@ const FilesController = {
     return res.status(200).json(file);
   },
   getIndex: async (req, res) => {
-    const user = retrieveUser(req);
+    const user = await retrieveUser(req);
     if (!user) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -96,7 +98,7 @@ const FilesController = {
     return res.status(200).json(files);
   },
   putPublish: async (req, res) => {
-    const user = retrieveUser(req);
+    const user = await retrieveUser(req);
     if (!user) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -110,7 +112,7 @@ const FilesController = {
     return res.status(200).json(publish);
   },
   putUnpublish: async (req, res) => {
-    const user = retrieveUser(req);
+    const user = await retrieveUser(req);
     if (!user) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -127,7 +129,7 @@ const FilesController = {
     try {
       const { id } = req.params;
       const file = await db.findFileById(id);
-      const user = retrieveUser(req);
+      const user = await retrieveUser(req);
       if (!file) {
         return res.status(404).json({ error: 'Not found' });
       }
