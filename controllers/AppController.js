@@ -14,7 +14,7 @@ const AppController = {
   getStats: async (req, res) => {
     try {
       const users = await db.nbUsers();
-      const files = await db.nFiles();
+      const files = await db.nbFiles();
       res.status(200).json({ users, files });
     } catch (error) {
       res.status(500).json({ error: error.message });
