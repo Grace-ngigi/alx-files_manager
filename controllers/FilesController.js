@@ -8,8 +8,8 @@ const FOLDER_PATH = process.env.FOLDER_PATH || '/tmp/files_manager';
 
 const FilesController = {
   postUpload: async (req, res) => {
-    const user = retrieveUser(req);
-    if (user === null) {
+    const user = await retrieveUser(req);
+    if (!user) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     const {
@@ -45,6 +45,7 @@ const FilesController = {
     if (type !== 'folder') {
       // revisit for creaatin and writin files
       const filename = uuidv4();
+      console.log(filename);
       if (!fs.existsSync(FOLDER_PATH)) {
         fs.mkdirSync(FOLDER_PATH, { recursive: true });
       }
@@ -60,7 +61,14 @@ const FilesController = {
       file.localPath = filePath;
     }
     const newFile = await db.createFile(file);
-    return res.status(201).json(newFile);
+
+    return res.status(201).json({
+      "id": newFile._id, 
+      "userId": newFile.userId,
+      "name": newFile.name,
+    "type": newFile.type,
+  "isPublic": newFile.isPublic,
+"parentId": newFile.parentId });
   },
   getShow: async (req, res) => {
     const user = retrieveUser(req);

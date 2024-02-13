@@ -13,7 +13,7 @@ const UsersController = {
     }
     const existingUser = await db.findUserByEmail(email);
     if (existingUser) {
-      return res.status(400).json({ error: 'Email already exists' });
+      return res.status(400).json({ error: 'Already exist' });
     }
     const hashedPasswd = sha1(password);
 
@@ -34,7 +34,7 @@ const UsersController = {
     if (!user) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    return res.status(200).json({ email: user.email, id: user.id });
+    return res.status(200).json({ id: user._id, email: user.email });
   },
 };
 

@@ -6,7 +6,7 @@ export default async function retrieveUser(req) {
   if (!token) return null;
   const userId = await redis.get(`auth_${token}`);
   if (!userId) return null;
-  const user = db.findUserById(userId);
+  const user = await db.findUserById(userId);
   if (!user) return null;
   return { email: user.email, id: user._id };
 }
