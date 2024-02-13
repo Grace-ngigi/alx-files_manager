@@ -1,8 +1,9 @@
 const chai = require('chai');
-const expect = chai.expect;
-const RedisClient = require('./RedisClient');
 
-describe('RedisClient', () => {
+const { expect, before } = chai;
+const RedisClient = require('../utils/redis');
+
+describe('redisClient', () => {
   let client;
 
   before(() => {

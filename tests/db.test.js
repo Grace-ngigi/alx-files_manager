@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 const DBClient = require('./DBClient');
 
-describe('DBClient', () => {
+describe('dBClient', () => {
   let dbClient;
 
   before(() => {

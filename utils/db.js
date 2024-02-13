@@ -75,8 +75,8 @@ class DBClient {
     return res.ops[0];
   }
 
-  async updateFile(id, ispublic){
-    return this.db.collection('files').updateOne({_id: ObjectId(id) }, { $set: { isPublic: ispublic}});
+  async updateFile(id, ispublic) {
+    return this.db.collection('files').updateOne({ _id: ObjectId(id) }, { $set: { isPublic: ispublic } });
   }
 }
 const dbClient = new DBClient();

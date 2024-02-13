@@ -43,7 +43,7 @@ const FilesController = {
     };
 
     if (type !== 'folder') {
-      // revisit for creaatin and writin files 
+      // revisit for creaatin and writin files
       const filename = uuidv4();
       if (!fs.existsSync(FOLDER_PATH)) {
         fs.mkdirSync(FOLDER_PATH, { recursive: true });
@@ -87,27 +87,26 @@ const FilesController = {
     console.log(`te so called files: ${files}`);
     return res.status(200).json(files);
   },
-  putPublish: async(req, res) => {
+  putPublish: async (req, res) => {
     const user = retrieveUser(req);
     if (!user) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    const {id} = req.params;
-        const file = await db.findFileByIdAndUserId(id, user.id);
+    const { id } = req.params;
+    const file = await db.findFileByIdAndUserId(id, user.id);
     if (!file) {
       return res.status(404).json({ error: 'Not found' });
     }
     const publish = await db.updateFile(id, true);
     console.log(publish);
     return res.status(200).json(publish);
-
   },
-  putUnpublish: async(req, res) => {
+  putUnpublish: async (req, res) => {
     const user = retrieveUser(req);
     if (!user) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    const {id} = req.params;
+    const { id } = req.params;
     const file = await db.findFileByIdAndUserId(id, user.id);
     if (!file) {
       return res.status(404).json({ error: 'Not found' });
@@ -116,9 +115,9 @@ const FilesController = {
     console.log(publish);
     return res.status(200).json(publish);
   },
-  getFile: async(req, res) => {
+  getFile: async (req, res) => {
     try {
-      const {id} = req.params;
+      const { id } = req.params;
       const file = await db.findFileById(id);
       const user = retrieveUser(req);
       if (!file) {
@@ -138,12 +137,12 @@ const FilesController = {
       // revisit to understand
       const mimeType = mime.lookup(file.name);
       res.setHeader('Content-Type', mimeType);
-      fs.createReadStream(file.localPath).pipe(res);
+      return fs.createReadStream(file.localPath).pipe(res);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'Internal Server Error' });
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
-  }
+  },
 };
 
 module.exports = FilesController;
